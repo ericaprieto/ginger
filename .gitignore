@@ -1,0 +1,7 @@
+# ephemeral agent workspace
+.implementation
+.worktrees
+node_modules
+.DS_Store
+.idea
+
