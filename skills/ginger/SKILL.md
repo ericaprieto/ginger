@@ -15,7 +15,7 @@ A mode-driven engineering framework. Each mode is a command: pick it, follow its
 | `review` | Review a diff or a whole codebase | [review.md](references/review.md) |
 | `explore` | Onboard onto or investigate an unfamiliar codebase | [explore.md](references/explore.md) |
 | `cleanup` | Find and remove dead code | [cleanup.md](references/cleanup.md) |
-| `plan` | Write a plan.md only (decompose without executing) | [implement.md](references/implement.md) steps 1-4, stop before step 5 |
+| `plan` | Write a plan.md only (decompose without executing) | [implement.md](references/implement.md) steps 0-4, stop before step 5 |
 
 A named mode overrides routing. Without an explicit mode, infer from the request; ambiguous or multi-part requests start at `implement`.
 
@@ -34,10 +34,15 @@ Every mode follows the same spine:
 
 ## Worker capability detection
 
-Check once per session whether an isolated-worker system is available (a tool to spawn workers with per-branch workspace isolation, e.g. opencode-ensemble's `team_*` tools):
+Check once per session by inspecting your own available tools - do not ask the user. Match the highest tier whose capabilities are present:
 
-- **Available** → read [ensemble-mode.md](references/ensemble-mode.md) and apply its rules for the whole run. It changes how stages run (adversarial plan debate, worker board, worktree waves, reviewer panels). Mechanics of the tools themselves are documented by the ensemble skill in its own repository - load that skill when working with the team tools.
-- **Not available** → single-agent mode: execute tasks serially yourself, update plan.md statuses as the progress tracker, and self-review each plan against the review checklist before implementing. Interruption and resume work the same way: statuses and Log in plan.md are the state.
+| Tier | Detection | Effect |
+|---|---|---|
+| **Ensemble** | A tool to spawn workers with per-branch workspace isolation, a persistent task board with dependencies, and messaging between agents (e.g. `team_create`/`team_spawn`) | Read [ensemble-mode.md](references/ensemble-mode.md) and apply it for the whole run. Plan review becomes an adversarial debate, execution becomes parallel worktree waves over the board, reviews become cross-examined panels. |
+| **Generic subagents** | A spawn/subagent tool exists but no inter-agent messaging and no shared task board | Parallel-capable but weaker: embed all context in each prompt, collect results synchronously, plan.md stays the only tracker, tasks never share files (chain same-file work serially), no cross-agent contracts. Cross-examination degrades to self-adjudication: re-read each finding's evidence yourself and rule. Plan self-review stays mandatory. |
+| **Solo** | Neither of the above | Execute tasks serially yourself, update plan.md statuses as the progress tracker, and self-review each plan against the review checklists before implementing. |
+
+Interruption and resume work identically in every tier: statuses and Log in plan.md are the state. Mechanics of the ensemble tools themselves are documented by the ensemble skill in its own repository - load that skill when operating the team tools.
 
 ## Steerability
 
@@ -59,4 +64,5 @@ The user may invoke a named principle mid-task by saying its name. On invocation
 - Every worker prompt embeds the context the worker cannot see (gitignored plan.md sections). Never reference a gitignored path in a worker prompt.
 - Verify every self-report yourself. Never claim done without running the project's own check commands.
 - Never silently commit or push; never open PRs unless asked. Commit at plan-defined boundaries only.
+- A question only ever gets an answer. Never take action based on a question, even if the answer seems obvious or implies a fix; if the user wants action, they will say so.
 - A worker that fails repeatedly is absorbed by the orchestrator (implement.md, blocked-task absorption) - caps are a handoff, not a halt.

@@ -16,7 +16,7 @@ Only the orchestrator edits plan.md - with two exceptions in ensemble mode: the 
 
 ## Mid-pipeline revisions
 
-The orchestrator may revise not-yet-done tasks (pending or in_progress) when discoveries, retries, conflicts, or review findings invalidate a task's assumptions. Every revision gets a Log line: `[YYYY-MM-DD HH:MM] T{n} revised: <reason>`. Revised tasks keep their task IDs and statuses - a revision changes content, not identity. Downstream workers receive the updated context automatically: the orchestrator assembles each prompt from the current plan.md at spawn time.
+The orchestrator may revise not-yet-done tasks (pending or in_progress) when discoveries, retries, conflicts, or review findings invalidate a task's assumptions. Every revision gets a Log line: `[YYYY-MM-DD HH:MM] T{n} revised: <reason>`. Revised tasks keep their task IDs and statuses - a revision changes content, not identity. Downstream workers receive the updated context automatically: the orchestrator assembles each prompt from the current plan.md at spawn time. A worker already running a revised task is messaged the revised criteria immediately (ensemble mode) - never left working from stale context.
 
 Task-result messages may carry a **DISCOVERIES** section - findings that invalidate plan assumptions, in the reporting worker's own task or in other tasks. The orchestrator records these in the Log.
 

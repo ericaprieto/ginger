@@ -26,7 +26,7 @@ Read each file that exists (skip missing ones): `AGENTS.md`, `ARCHITECTURE.md`, 
 - Likely under 30 lines of change
 - No new patterns, no architectural decisions
 
-For trivial changes: make the change directly, run tests, commit, report. No plan.md, no ceremony. Done.
+For trivial changes: make the change directly, run tests, commit, report. No plan.md, no ceremony. Done. (The trivial fast path's commit is its own boundary - the plan-defined-boundary rule applies once a plan exists.)
 
 **Full pipeline** - everything else. Continue.
 
@@ -38,20 +38,23 @@ Record the current HEAD: `git rev-parse HEAD` - this becomes `start_hash` in pla
 
 ## Step 4 - Plan (research + decompose)
 
-> **[ensemble]** Spawn an architect worker with the plan-research contract below as its prompt body; the architect writes the plan.md draft. Spawn mechanics: [ensemble-mode.md](ensemble-mode.md).
+> **[ensemble]** Spawn an architect worker with the research protocol below as its prompt body; the architect writes the plan.md draft. Spawn mechanics: [ensemble-mode.md](ensemble-mode.md).
 > **[solo]** Research the codebase yourself and write the plan.md draft directly.
 
-Research protocol (whoever executes it - architect worker or the orchestrator):
+Research protocol (whoever executes it - architect worker or the orchestrator). Constraints: write exactly one file (plan.md); no code edits, no branches, no commits; no placeholders - every task must be actionable.
 
 1. Read the plan format spec: [plan-schema.md](plan-schema.md). The plan must parse cleanly under it.
-2. Record the execution start hash (Step 3).
-3. Understand the request: restate the goal, the finish condition, and constraints in one sentence each; identify the affected area.
-4. Research affected areas: read the relevant files, trace call chains, find where the change lands. Verify claims against actual code - trust code, not comments. Report findings with file:line references.
-5. Identify patterns and constraints: existing patterns to follow, hard constraints, coding standards (project docs), relevant files.
-6. Decompose into tasks: a task is one atomic unit of work. If a task contains "and" or spans more than one file area, split it. Order dependencies (what must exist before what). Assign each task a role (`research` / `implement` / `review`), files, `depends:`, and a phase label.
-7. Acceptance criteria with TDD sub-items per [plan-schema.md](plan-schema.md) (red/green/refactor; state the runnable check).
-8. Write `.implementation/<name>/plan.md` following the template in plan-schema.md exactly. Meta.status `in_progress`, Meta.team `none` (the orchestrator fills it in ensemble mode).
-9. Report: feature name, plan path, task count by phase, open questions, which tasks can run in parallel first.
+2. Read the project docs that exist: `AGENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `README.md` - extract constraints, patterns, and standards the plan must respect.
+3. Record the execution start hash (Step 3).
+4. Understand the request: restate the goal, the finish condition, and constraints in one sentence each; identify the affected area.
+5. Research affected areas: read the relevant files, trace call chains, find where the change lands. Verify claims against actual code - trust code, not comments. Report findings with file:line references.
+6. Identify patterns and constraints: existing patterns to follow, hard constraints, coding standards (from the project docs read in step 2), relevant files.
+7. Decompose into tasks: a task is one atomic unit of work. If a task contains "and" or spans more than one file area, split it. Order dependencies (what must exist before what); tasks touching the same files must be chained via `depends:`. Assign each task a role (`research` / `implement` / `review`), files, `depends:`, and a phase label. Use the phase-shape templates:
+   - **Bug fix**: `p1 Reproduce and diagnose` (isolate the failure, trace to root cause), `p2 Fix` (with the regression test written red-first), `p3 Verify` (run the real flow, confirm the original repro is gone).
+   - **Feature**: `p1 Scaffold and research` (types, interfaces, module shape), `p2 Core implementation` (the primary change, in dependency order), `p3 Tests and verification` (full acceptance, edge cases).
+8. Acceptance criteria with TDD sub-items per [plan-schema.md](plan-schema.md) (red/green/refactor; state the runnable check).
+9. Write `.implementation/<name>/plan.md` following the template in plan-schema.md exactly. Meta.status `in_progress`, Meta.team `none` (the orchestrator fills it in ensemble mode).
+10. Report: feature name, plan path, task count by phase, open questions, which tasks can run in parallel first.
 
 Spawn-failure handling (ensemble): if the architect wedges, lacks write capability, or idles, shut it down force and respawn under a fresh name; only if the replacement still cannot write plan.md, surface that as a blocker - never substitute a chat-message breakdown.
 
@@ -62,7 +65,7 @@ Spawn-failure handling (ensemble): if the architect wedges, lacks write capabili
 The plan review always happens. Worker availability decides the form:
 
 > **[ensemble]** Adversarial critic debate: one Simplifier critic (plus a Risk Auditor when the plan touches more than 5 files or is architectural). Findings cycle through REVISE/REBUT to the architect, then ACCEPT/ESCALATE back, 3-round cap, the orchestrator adjudicates escalations. Full protocol: [ensemble-mode.md](ensemble-mode.md) Plan debate.
-> **[solo]** Self-review pass. Apply BOTH critic protocols below to your own plan, honestly, before writing any code:
+> **[solo]** Self-review pass. Apply the Simplifier protocol always, and the Risk Auditor protocol when the plan touches more than 5 files or is architectural - honestly, before writing any code:
 
 **Simplifier pass** - what would dramatically less look like?
 1. Understand (do not strawman) - acknowledge what is good.
@@ -120,7 +123,7 @@ After review and any fix waves:
 - **Hand-assemble every worker prompt** from the current plan.md per plan-schema.md, embedding Research and the relevant Shared sections verbatim. Validate the plan before each spawn.
 - **Verify acceptance yourself** - never trust a worker's self-report.
 - **Worktree workers cannot see plan.md** (gitignored). All their context flows through the embedded prompt. Never reference plan.md by path in a worker prompt.
-- **Commit at commit boundaries only**, after verification. No branch creation, no PR creation.
+- **Commit at commit boundaries only**, after verification. No branch creation, no PR creation (worktree branches in ensemble mode are tool-managed, not agent-created).
 - **Never commit `.implementation/` files.**
 - **Blocked tasks isolate**: one blocked task halts only its dependent subgraph. Keep other work running.
 - **Adjudicate worker conflicts yourself** - weigh both sides, rule, and log the adjudication with reasoning in plan.md's Log. Only a genuine ambiguity about the user's goal stops the pipeline to ask.

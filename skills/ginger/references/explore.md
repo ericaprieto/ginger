@@ -2,6 +2,9 @@
 
 Systematically explore a medium-to-large codebase using parallel workers. Produces a structured report: project overview, module map, dependency hotspots, key abstractions, and data flows. For small codebases (under ~20 files), explore manually with `ls`/`find`/`grep` - worker overhead is not worth it.
 
+> **[ensemble]** Each phase's workers spawn as read-only teammates per [ensemble-mode.md](ensemble-mode.md).
+> **[solo]** Run the same phases yourself in sequence, doing each worker's steps inline and capping each phase's output before moving on.
+
 Given a `{CODEBASE PATH}` (defaults to the current working directory) and an optional `{FOCUS}` (a question, area, or feature to investigate):
 
 ## Phase structure
@@ -40,7 +43,7 @@ Identify the 3-5 most important source directories. Spawn one worker per directo
 1. `tree <module> -L 2` (or `find`)
 2. Build the module's internal import graph with `rg`
 3. For the 3-5 most connected files, inspect their structure (grep for declarations, `sed`/`head` for section boundaries) - never read whole large files
-4. If an outline reveals important types/interfaces/classes, read only those sections (with offset/limit)
+4. If the structural inspection reveals important types/interfaces/classes, read only those sections (with offset/limit)
 
 Return: module purpose (1-2 sentences); key files and what each does (1 line each); main abstractions and their relationships; how the module connects to the rest (imports from / exports to); notable patterns (factory, middleware chain, plugin system).
 

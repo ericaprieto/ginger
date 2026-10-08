@@ -152,7 +152,7 @@ Clean up the scratch review team if one was created.
 
 ## Shared rules (both modes)
 
-- **Structured findings**: reviewers return JSON arrays so the lead can parse and rank programmatically.
+- **Structured findings**: project-mode chunk reviewers return JSON arrays so the lead can parse and rank programmatically; diff-mode tracks return prose findings in the MUST FIX / SHOULD FIX / CONSIDER buckets shown above.
 - **Severity calibration**: CRITICAL/HIGH require concrete evidence (file:line, test case, or invariant violation). MEDIUM/LOW may reference patterns and best practices.
 - **Never auto-fix.** Read-only review; report findings only.
 - **Respect .gitignore.** Files excluded by git are out of scope.
