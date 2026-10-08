@@ -119,6 +119,7 @@ Rules:
 
 - **Dead code** - per the `cleanup` mode's method: for each file's exported/public symbols, count usages repo-wide (excluding the definition site), then check dynamic references before flagging. Each finding LOW unless in a file with higher-severity findings (then MEDIUM).
 - **Test coverage** - reviews excluded test files: missing test files for complex modules, happy-path-only tests, flaky patterns (timers, network calls without mocks). MEDIUM (missing coverage for complex code) or LOW (shallow tests).
+- **Reuse** - for each new helper, abstraction, or reusable unit in the diff, search the repo for an existing shared equivalent (sibling modules, shared utilities, project docs, migration or deprecation notes). Hand-rolled code that duplicates one is MEDIUM (HIGH if the project docs mark the existing one as the standard or the hand-rolled approach as deprecated). Logic duplicated across 2+ new call sites with no shared home is MEDIUM.
 - **Architecture** - scans imports/includes and cross-file references with `rg`/`grep`, then reviews the dependency structure for: circular dependencies (HIGH), god modules with fan-in > 20 (MEDIUM), leaky abstractions (MEDIUM), layering violations (HIGH).
 
 ### 3. Aggregate and report
