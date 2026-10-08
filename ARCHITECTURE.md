@@ -36,6 +36,7 @@ skills/ginger/
     explore.md             # explore mode: 4-phase parallel survey → module map → focus trace → report
     cleanup.md             # cleanup mode: language-agnostic dead-code removal with usage evidence
     ensemble-mode.md       # What ensemble availability changes per stage; points to the ensemble repo for tool mechanics
+    project-rules.md       # Discovery of project-local review skills/rules/tools across harness convention folders; used by implement, review, cleanup, explore
 AGENTS.md                  # Repo rules, conventions, pitfalls
 ARCHITECTURE.md            # This file
 README.md                  # Layout, modes, setup

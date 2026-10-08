@@ -44,7 +44,7 @@ Record the current HEAD: `git rev-parse HEAD` - this becomes `start_hash` in pla
 Research protocol (whoever executes it - architect worker or the orchestrator). Constraints: write exactly one file (plan.md); no code edits, no branches, no commits; no placeholders - every task must be actionable.
 
 1. Read the plan format spec: [plan-schema.md](plan-schema.md). The plan must parse cleanly under it.
-2. Read the project docs that exist: `AGENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `README.md` - extract constraints, patterns, and standards the plan must respect.
+2. Read the project docs that exist: `AGENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `README.md` - extract constraints, patterns, and standards the plan must respect. Also run the project review skills and rules discovery ([project-rules.md](project-rules.md)) - discovered rules become Shared constraints; a discovered project review skill feeds Step 7.
 3. Record the execution start hash (Step 3).
 4. Understand the request: restate the goal, the finish condition, and constraints in one sentence each; identify the affected area.
 5. Research affected areas: read the relevant files, trace call chains, find where the change lands. Verify claims against actual code - trust code, not comments. Report findings with file:line references.

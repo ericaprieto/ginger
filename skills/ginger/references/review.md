@@ -5,6 +5,8 @@ Comprehensive code review against project rules. Two modes: **diff review** (def
 > **[ensemble]** Reviews run as parallel reviewer teammates (no worktree isolation - read-only) into the active pipeline team or a scratch team. Reviewer panels and the cross-examination round: [ensemble-mode.md](ensemble-mode.md) Review.
 > **[solo]** Run the same tracks yourself in sequence, applying each reviewer prompt's checklist to the diff or chunk. Report in the same output formats.
 
+Project-specific review skills and rules (harness convention folders, project docs, review tools) are discovered once and folded into the reviewer prompts as an additional track: [project-rules.md](project-rules.md).
+
 Workers (teammates) are leaf-only: never spawn subagents or delegate work. Only the lead manages and spawns.
 
 ## Diff review
@@ -66,6 +68,7 @@ Files: <count> | Reviewers: <list>
 
 ### 1. Survey and partition (the orchestrator does this)
 
+0. Project review skills and rules: run the discovery check ([project-rules.md](project-rules.md)) so its findings shape the reviewer prompts.
 1. File counts and LOC by language: `find . -name '*.ext' -not -path '*/node_modules/*' | xargs wc -l` (adapt per language).
 2. Directory structure: `tree -L 2` or `find . -maxdepth 2 -type d`.
 3. Source file list: include source code files; exclude `node_modules`, `dist`, `build`, `.next`, `coverage`, `vendor`, `.git`, lock files, generated and minified files, config files under ~20 lines. Exclude test files from the main review - they get the test-coverage cross-cutting pass.
