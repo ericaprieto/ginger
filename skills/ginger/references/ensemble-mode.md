@@ -18,7 +18,7 @@ If only generic spawn-and-collect subagent tooling exists (no messaging, no boar
 | Spawn | One at a time. Workers are leaf-only: never spawn subagents, nested sessions, or delegate work. The lead alone manages and spawns. |
 | Roles | `research`/`review` workers: no worktree (read-only). `implement` workers: worktree isolation. Plan-research architect: no worktree (writes the gitignored plan.md). |
 | Model | Per spawn: pick the best-fit model preserving the session's provider and model prefix; exact ID from the models listing. No fit → stop and ask rather than switching providers. |
-| Report | Workers report via task-result messages. Message-driven - never poll a status board. |
+| Report | Workers report via task-result messages. Message-driven - never poll a status board. On ANY wake-up (a bare notification, a user "continue", a stall flag), call `team_results`/`team_status` once before concluding there is nothing new - a delivered message may be empty in the transcript while its full content sits in the results store. Never end a turn idle while any worker may have completed unreported work. |
 | Merge | Merge each worker's branch, inspect the diff, then verify acceptance. Never merge without reading the result and the diff. |
 | Shutdown | Shut down workers as their tasks complete; never leave idle workers. |
 | Cleanup | Clean the team at the end. Purge actions need human approval. |
