@@ -1,4 +1,4 @@
-# agent-toolkit
+# ginger
 
 Ginger: an agentic engineering framework for coding agents - implement features and fixes, review code, explore codebases, and clean dead code through a plan-driven pipeline with durable state. Harness-agnostic; opencode is the primary host, and parallel work is supercharged by opencode-ensemble when available.
 
