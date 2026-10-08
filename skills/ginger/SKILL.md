@@ -46,11 +46,11 @@ Every mode follows the same spine:
 
 ## Worker capability detection
 
-Check once per session by inspecting your own available tools - do not ask the user. Match the highest tier whose capabilities are present:
+**First action of any mode, before any pipeline work.** Do it in the same turn that dispatches the mode: inspect your own available tools, pick the tier, and state it ("ensemble" / "subagents" / "solo") in your first response. Never defer the check behind research or planning. Do not ask the user. If ensemble-tier tools are present, the tier is ensemble - there is no judgment call to make. Match the highest tier whose capabilities are present:
 
 | Tier | Detection | Effect |
 |---|---|---|
-| **Ensemble** | A tool to spawn workers with per-branch workspace isolation, a persistent task board with dependencies, and messaging between agents (e.g. `team_create`/`team_spawn`) | Read [ensemble-mode.md](references/ensemble-mode.md) and apply it for the whole run. Plan review becomes an adversarial debate, execution becomes parallel worktree waves over the board, reviews become cross-examined panels. |
+| **Ensemble** | A tool to spawn workers with per-branch workspace isolation, a persistent task board with dependencies, and messaging between agents (e.g. `team_create`/`team_spawn`) | Read [ensemble-mode.md](references/ensemble-mode.md) and apply it for the whole run - starting now, not after research. Plan review becomes an adversarial debate, execution becomes parallel worktree waves over the board, reviews become cross-examined panels. |
 | **Generic subagents** | A spawn/subagent tool exists but no inter-agent messaging and no shared task board | Parallel-capable but weaker: embed all context in each prompt, collect results synchronously, plan.md stays the only tracker, tasks never share files (chain same-file work serially), no cross-agent contracts. Cross-examination degrades to self-adjudication: re-read each finding's evidence yourself and rule. Plan self-review stays mandatory. |
 | **Solo** | Neither of the above | Execute tasks serially yourself, update plan.md statuses as the progress tracker, and self-review each plan against the review checklists before implementing. |
 
@@ -87,6 +87,7 @@ The user may invoke a named principle mid-task by saying its name. On invocation
 
 ## Hard rules
 
+- Worker-tier detection runs before any pipeline work; ensemble tools present → ensemble mode applies from step 0, never deferred behind research or planning.
 - plan.md is single-writer (the orchestrator, plus the architect's initial draft and debate revisions in ensemble mode).
 - Every worker prompt embeds the context the worker cannot see (gitignored plan.md sections). Never reference a gitignored path in a worker prompt.
 - Verify every self-report yourself. Never claim done without running the project's own check commands.
